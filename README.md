@@ -9,9 +9,10 @@ Inspired by the Microsoft [LockoutStatus.exe](https://www.microsoft.com/en-us/do
     PS C:\> Get-LockoutStatus bob
     
     
-    User     : bob (Bob Masters)
-    Expired  : True (31.10.2015)
-    Disabled : False
+    User      : bob (Bob Masters)
+	LastLogon : 27.9.2015 16:12:59
+    Expired   : True (31.10.2015)
+    Disabled  : False
     
     
     DomainController     Locked BadPwdCount LastLock               LastBadPwd             PwdExpired

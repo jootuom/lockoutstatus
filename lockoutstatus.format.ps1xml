@@ -10,16 +10,25 @@
 							<Frame>
 								<!--<LeftIndent>4</LeftIndent>-->
 								<CustomItem>
-									<Text>User     : </Text>
+									<Text>User      : </Text>
 									<ExpressionBinding>
 										<ScriptBlock>"$($_.User) `($($_.Name)`)"</ScriptBlock>
 									</ExpressionBinding>
 									<NewLine/>
 								</CustomItem>
 							</Frame>
+                            <Frame>
+								<CustomItem>
+									<Text>LastLogon : </Text>
+									<ExpressionBinding>
+										<ScriptBlock>$_.LastLogonDate</ScriptBlock>
+									</ExpressionBinding>
+									<NewLine/>
+								</CustomItem>
+							</Frame>
 							<Frame>
 								<CustomItem>
-									<Text>Expired  : </Text>
+									<Text>Expired   : </Text>
 									<ExpressionBinding>
 										<ScriptBlock>$_.Expired</ScriptBlock>
 									</ExpressionBinding>
@@ -28,7 +37,7 @@
 							</Frame>
 							<Frame>
 								<CustomItem>
-									<Text>Disabled : </Text>
+									<Text>Disabled  : </Text>
 									<ExpressionBinding>
 										<ScriptBlock>$_.Disabled</ScriptBlock>
 									</ExpressionBinding>

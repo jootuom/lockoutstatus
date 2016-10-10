@@ -8,19 +8,19 @@ Function Format-Date {
 	Param(
 		$Date
 	)
-	
+
 	if ($Date -eq $null) {
-		return ""
-	}
-	
-	$Date.ToString("d.M.yyyy HH:mm:ss")
+		""
+	} else {
+        $Date.ToString("d.M.yyyy HH:mm:ss")
+    }
 }
 
 Function Format-AccountExpiration {
 	Param(
 		$Date
 	)
-	
+
 	if ($Date -and ((Get-Date) -gt $Date)) {
 		"True ({0})" -f ($Date.ToString("d.M.yyyy"))
 	} else {
@@ -38,10 +38,10 @@ Function Format-PWExpiration {
 	)
 
 	if ($Date -eq "") {
-		return ""
+		""
+	} else {
+        [string]::format("{0} (set {1})", $Expired, $DateSet)
 	}
-	
-	[string]::Format("{0} (set {1})", $Expired, $DateSet)
 }
 
 Function Get-LockoutStatus {
@@ -69,10 +69,10 @@ Function Get-LockoutStatus {
 		if (!(Get-Module ActiveDirectory)) {
 			Import-Module ActiveDirectory
 		}
-		
+
 		$DCs = Get-ADDomainController -Filter * |
 			select -expand HostName
-		
+
 		$props = @{
 			Properties = @(
 				"AccountExpirationDate",
@@ -80,6 +80,7 @@ Function Get-LockoutStatus {
 				"badPwdCount",
 				"AccountLockoutTime",
 				"LastBadPasswordAttempt",
+				"LastLogonDate",
 				"PasswordExpired",
 				"PasswordLastSet"
 			)
@@ -87,7 +88,7 @@ Function Get-LockoutStatus {
 	}
 	process {
 		$results = @()
-	
+
 		foreach ($DC in $DCs) {
 			try {
 				$user = Get-ADUser -Identity $SamAccountName -Server $DC @props
@@ -104,31 +105,32 @@ Function Get-LockoutStatus {
 				Write-Debug "Unknown error: $($_.Exception.GetType().FullName)"
 				throw $_
 			}
-			
+
 			$result = New-Object PSObject -Property @{
 				User = $user.SamAccountName;
 				Name = $user.Name;
 				Disabled = !$user.Enabled;
 				Expired = Format-AccountExpiration $user.AccountExpirationDate;
-				
+
 				DomainController = $DC.split(".")[0];
 				Locked = $user.LockedOut;
 				Count = $user.badPwdCount;
 				LastLock = Format-Date $user.AccountLockoutTime;
 				LastBadAttempt = Format-Date $user.LastBadPasswordAttempt;
+				LastLogonDate = Format-Date $user.LastLogonDate;
 				PwdExpired = Format-PWExpiration $user.PasswordExpired `
 					(Format-Date $user.PasswordLastSet)
 			}
 
 			$result.PSTypeNames.Insert(0, "LockoutStatusData")
-			
+
 			$results += $result
 		}
-		
+
 		$results
 	}
 	end {
-		
+
 	}
 }
 
